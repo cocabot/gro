@@ -28,9 +28,16 @@ jobs:
       - name: Run packgate on this package
         run: node dist/cli.js --fail-on-severity high
       - name: Example gitignore footgun still fails
+        env:
+          GITHUB_ACTIONS: ""
         run: |
-          if node dist/cli.js examples/leaky-files-field; then
-            echo "expected packgate to fail on the leaky example" >&2
+          printf 'EXAMPLE_ONLY=not-a-live-secret\n' > examples/leaky-files-field/.env
+          set +e
+          node dist/cli.js examples/leaky-files-field
+          status=$?
+          set -e
+          if [ "$status" -ne 1 ]; then
+            echo "expected packgate to exit 1 on the leaky example, got ${status}" >&2
             exit 1
           fi
 

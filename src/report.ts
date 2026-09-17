@@ -32,9 +32,10 @@ export function formatReport(result: AnalyzeResult, format: ReportFormat): strin
   }
 }
 
-export function githubAnnotations(result: AnalyzeResult): string[] {
+export function githubAnnotations(result: AnalyzeResult, failOn: Severity | "none" = "high"): string[] {
   return result.findings.map((finding) => {
-    const level = finding.severity === "info" || finding.severity === "low" ? "warning" : "error";
+    const failing = failOn !== "none" && SEVERITY_RANK[finding.severity] >= SEVERITY_RANK[failOn];
+    const level = failing ? "error" : "warning";
     const file = finding.path ? `file=${finding.path},` : "";
     const title = "title=packgate,";
     return `::${level} ${file}${title}::${escapeProperty(finding.message)}`;

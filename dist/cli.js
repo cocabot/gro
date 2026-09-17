@@ -135,7 +135,7 @@ export async function main(argv = process.argv.slice(2)) {
         }
         process.stdout.write(formatReport(result, options.format));
         if (process.env["GITHUB_ACTIONS"] === "true") {
-            for (const line of githubAnnotations(result)) {
+            for (const line of githubAnnotations(result, options.failOn)) {
                 process.stdout.write(`${line}\n`);
             }
         }

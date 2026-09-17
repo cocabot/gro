@@ -26,7 +26,7 @@ export async function runAction() {
     });
     const report = formatReport(result, format);
     process.stdout.write(report);
-    for (const line of githubAnnotations(result)) {
+    for (const line of githubAnnotations(result, failOn)) {
         process.stdout.write(`${line}\n`);
     }
     const summaryPath = process.env["GITHUB_STEP_SUMMARY"];
