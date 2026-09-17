@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Require committed dist to match src
+        run: git diff --exit-code -- dist
+      - name: Run packgate on this package
+        run: node dist/cli.js --fail-on-severity high
+      - name: Example gitignore footgun still fails
+        run: |
+          if node dist/cli.js examples/leaky-files-field; then
+            echo "expected packgate to fail on the leaky example" >&2
+            exit 1
+          fi
+
+  action-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Smoke the GitHub Action entrypoint
+        env:
+          INPUT_PATH: .
+          INPUT_FAIL_ON_SEVERITY: high
+          INPUT_REPORT_FORMAT: markdown
+          INPUT_SCAN_CONTENTS: "true"
+          INPUT_GIT: "true"
+          PACKGATE_ACTION: "1"
+        run: node dist/action.js

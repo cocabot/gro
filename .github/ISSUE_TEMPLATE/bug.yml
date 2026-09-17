@@ -1,0 +1,21 @@
+name: Bug
+description: A wrong tarball that packgate missed or a false positive
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Do not paste live secrets. Redact tokens in logs.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened
+      description: Command, expected finding or exit code, actual result.
+    validations:
+      required: true
+  - type: textarea
+    id: package
+    attributes:
+      label: Package shape
+      description: Relevant files field, npmignore, gitignore, and Node/npm versions. Redact secrets.
+    validations:
+      required: true

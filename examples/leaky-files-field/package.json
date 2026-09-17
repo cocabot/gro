@@ -1,0 +1,6 @@
+{
+  "name": "leaky-files-field-example",
+  "version": "0.0.0",
+  "private": true,
+  "files": ["*"]
+}
