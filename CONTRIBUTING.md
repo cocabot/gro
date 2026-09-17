@@ -13,7 +13,7 @@ npm install
 npm test
 ```
 
-`npm test` typechecks, compiles `src/` to `dist/`, then runs `node --test` on `test/*.test.ts`.
+`npm test` typechecks and compiles `src/` to `dist/`, compiles `test/` to `dist-test/`, then runs Node's test runner. Node.js 20+ is enough (no type-stripping flag).
 
 Run packgate against this repo (after a build):
 
