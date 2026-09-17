@@ -1,0 +1,43 @@
+name: packgate
+description: Fail if npm pack would ship secrets, untracked files, or drop required package files
+author: cocabot
+branding:
+  icon: package
+  color: red
+inputs:
+  path:
+    description: Package directory to inspect
+    required: false
+    default: "."
+  config:
+    description: Path to packgate.json
+    required: false
+    default: ""
+  report-format:
+    description: Workflow log format (text, json, markdown, or sarif)
+    required: false
+    default: markdown
+  fail-on-severity:
+    description: Fail the job at this severity or higher (none, info, low, medium, high, critical)
+    required: false
+    default: high
+  scan-contents:
+    description: Scan packed file contents for high-confidence secret patterns
+    required: false
+    default: "true"
+  git:
+    description: Compare packed files against git ls-files
+    required: false
+    default: "true"
+outputs:
+  finding-count:
+    description: Total number of findings
+  critical-count:
+    description: Number of critical findings
+  high-count:
+    description: Number of high findings
+  packed-file-count:
+    description: Number of files npm pack would include
+runs:
+  using: node20
+  main: dist/action.js

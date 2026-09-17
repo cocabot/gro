@@ -1,0 +1,11 @@
+dist-test/
+node_modules/
+coverage/
+*.tgz
+.DS_Store
+tmp/
+.idea/
+.vscode/
+/.env
+/.env.*
+!.env.example

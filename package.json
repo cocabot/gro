@@ -1,0 +1,68 @@
+{
+  "name": "packgate",
+  "version": "0.1.0",
+  "description": "Fail CI when npm pack would ship secrets, untracked files, or drop required package files.",
+  "keywords": [
+    "npm",
+    "pack",
+    "publish",
+    "tarball",
+    "supply-chain",
+    "security",
+    "ci",
+    "github-actions",
+    "gitignore",
+    "npmignore"
+  ],
+  "homepage": "https://github.com/cocabot/gro",
+  "bugs": {
+    "url": "https://github.com/cocabot/gro/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cocabot/gro.git"
+  },
+  "license": "MIT",
+  "author": "cocabot",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "packgate": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "action.yml",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && tsc -p tsconfig.test.json && node --test dist-test/*.test.js",
+    "packgate": "npm run build && node dist/cli.js",
+    "prepublishOnly": "npm test"
+  },
+  "packgate": {
+    "require": [
+      "LICENSE",
+      "README.md",
+      "dist/cli.js",
+      "dist/action.js",
+      "dist/index.js"
+    ],
+    "maxUnpackedBytes": 524288
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.3"
+  }
+}
