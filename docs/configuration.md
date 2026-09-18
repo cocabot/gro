@@ -18,7 +18,7 @@ All keys are optional. Missing keys keep the defaults.
 | `maxUnpackedBytes` | number \| null | `null` | Fail when the pack tarball's unpacked size exceeds this budget. |
 | `scanContents` | boolean | `true` | Read packed files for high-confidence secret patterns. |
 | `git` | boolean | `true` | Compare packed paths to `git ls-files`. |
-| `oracle` | `"auto"` \| `"npm"` \| `"pnpm"` \| `"yarn"` | `"auto"` | Which pack command to inspect. |
+| `oracle` | `"auto"` \| `"npm"` \| `"pnpm"` \| `"yarn"` \| `"python"` | `"auto"` | Which pack command to inspect. `auto` uses npm when `package.json` exists, otherwise `python -m build` when `pyproject.toml` / `setup.py` is present. |
 | `baseline` | string \| null | `null` | Compare packed paths to another tarball. `last-tag`, `git:v1.0.0`, or `npm:latest`. |
 
 Replacing `deny` replaces the **entire** default list. Copy the defaults you still want.

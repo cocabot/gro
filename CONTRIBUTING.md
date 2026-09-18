@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve packgate. The useful contributions are: failing fixtures, clearer docs, fewer false positives, and support for other pack oracles (Python wheels, crates).
+Thanks for helping improve packgate. The useful contributions are: failing fixtures, clearer docs, fewer false positives, and support for other pack oracles (Cargo crates).
 
 ## Development setup
 

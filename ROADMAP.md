@@ -5,7 +5,6 @@ These are real gaps, not filler. Each item should land with a fixture and a find
 ## Next
 
 - **Workspace packages** — run against `--workspace` members instead of only the current directory.
-- **Python sdists/wheels** — the same class of bug exists for `python -m build` artifacts (`files` vs VCS vs `MANIFEST.in`).
 
 ## Later
 
@@ -18,6 +17,7 @@ These are real gaps, not filler. Each item should land with a fixture and a find
 - pnpm pack and yarn pack oracles (`--oracle auto|npm|pnpm|yarn`)
 - GitHub-only distribution (Action, `npx github:cocabot/gro`, pre-commit). No npmjs account.
 - Baseline packed-path diff (`--baseline last-tag|git:<ref>|npm:latest`)
+- Python wheels and sdists (`--oracle python`, `python -m build`)
 
 ## Non-goals
 

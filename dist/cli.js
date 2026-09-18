@@ -75,7 +75,7 @@ export function parseArgs(argv) {
                 break;
             case "--oracle": {
                 const value = next();
-                if (value !== "auto" && value !== "npm" && value !== "pnpm" && value !== "yarn") {
+                if (value !== "auto" && value !== "npm" && value !== "pnpm" && value !== "yarn" && value !== "python") {
                     throw new Error(`Unknown oracle '${value}'`);
                 }
                 options.oracle = value;
@@ -94,7 +94,7 @@ export function parseArgs(argv) {
     return options;
 }
 export function helpText() {
-    return `packgate — fail CI when npm/pnpm/yarn pack would ship the wrong files
+    return `packgate — fail CI when npm/pnpm/yarn pack or python -m build would ship the wrong files
 
 Usage:
   packgate [directory] [options]
@@ -105,7 +105,7 @@ Options:
   --format text|json|markdown|sarif
   --fail-on-severity LEVEL   none|info|low|medium|high|critical (default: high)
   --print-files              List packed file paths
-  --oracle auto|npm|pnpm|yarn  Pack command to inspect (default: auto)
+  --oracle auto|npm|pnpm|yarn|python  Pack command to inspect (default: auto)
   --baseline SPEC              last-tag | git:<ref> | npm:latest | none
   --no-scan-contents         Skip reading tarball contents for secret patterns
   --no-git                   Skip comparing packed files to git ls-files

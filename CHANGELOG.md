@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-09-18
+
+### Added
+
+- `--oracle python` inspects the wheel and sdist from `python -m build` (gitignored `package-data` / `MANIFEST.in` leaks)
+- Example `examples/leaky-python`
+- CI job that runs the published Action `cocabot/gro@v0.3.0` against this repo
+
 ## [0.3.0] - 2026-09-18
 
 ### Added
@@ -46,6 +54,7 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - GitHub Action with job summary, annotations, and outputs
 - `packgate.json` and `package.json#packgate` configuration
 
+[0.4.0]: https://github.com/cocabot/gro/releases/tag/v0.4.0
 [0.3.0]: https://github.com/cocabot/gro/releases/tag/v0.3.0
 [0.2.0]: https://github.com/cocabot/gro/releases/tag/v0.2.0
 [0.1.0]: https://github.com/cocabot/gro/releases/tag/v0.1.0

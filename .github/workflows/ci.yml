@@ -24,6 +24,8 @@ jobs:
       - run: npm ci
       - name: Install pnpm and yarn pack oracles
         run: npm install -g pnpm@10 yarn@1.22.22
+      - name: Install python -m build
+        run: python3 -m pip install --user build
       - run: npm test
       - name: Require committed dist to match src
         run: git diff --exit-code -- dist
@@ -42,6 +44,33 @@ jobs:
             echo "expected packgate to exit 1 on the leaky example, got ${status}" >&2
             exit 1
           fi
+      - name: Example Python package-data footgun still fails
+        env:
+          GITHUB_ACTIONS: ""
+        run: |
+          printf 'EXAMPLE_ONLY=not-a-live-secret\n' > examples/leaky-python/leaky/.env
+          set +e
+          node dist/cli.js examples/leaky-python
+          status=$?
+          set -e
+          if [ "$status" -ne 1 ]; then
+            echo "expected packgate to exit 1 on the leaky python example, got ${status}" >&2
+            exit 1
+          fi
+
+  packgate-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: cocabot/gro@v0.3.0
+        with:
+          fail-on-severity: high
 
   action-smoke:
     runs-on: ubuntu-latest

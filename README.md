@@ -1,6 +1,6 @@
 # packgate
 
-Fail CI when `npm pack`, `pnpm pack`, or `yarn pack` would ship secrets, untracked files, or drop the files your `package.json` says you export.
+Fail CI when `npm pack`, `pnpm pack`, `yarn pack`, or `python -m build` would ship secrets, untracked files, or drop the files your package claims to export.
 
 `.gitignore` does **not** decide what a registry upload contains. A `files` field or `.npmignore` can pack `.env` files that git never tracked — or omit `dist/index.d.ts` and break every consumer. packgate inspects the tarball those pack commands actually write.
 
@@ -14,7 +14,7 @@ Maintainers of JavaScript packages who want a last gate before publish, without 
 | --- | --- |
 | git / gitleaks | The git tree and history |
 | publint, `@arethetypeswrong/cli` | `package.json` fields and type resolution |
-| **packgate** | The **tarball `npm` / `pnpm` / `yarn` pack produces** |
+| **packgate** | The **tarball/wheel `npm` / `pnpm` / `yarn` pack or `python -m build` produces** |
 
 Those tools are complementary. packgate exists because the publish artifact is a third tree, distinct from git and from the manifest.
 
@@ -74,7 +74,7 @@ Exit codes:
 - `1` — the tarball failed the gate
 - `2` — packgate could not run (pack command failed, bad arguments, …)
 
-`--oracle auto` (default) uses `package.json#packageManager`, then `pnpm-lock.yaml` / `yarn.lock`, then `npm pack`.
+`--oracle auto` (default) uses `package.json#packageManager`, then lockfiles, then `npm pack`. If there is no `package.json` but `pyproject.toml` / `setup.py` exists, auto selects `python -m build`.
 
 
 ## What it checks
@@ -111,7 +111,7 @@ See [docs/configuration.md](docs/configuration.md).
 
 ```text
 packgate [directory]
-  --oracle auto|npm|pnpm|yarn
+  --oracle auto|npm|pnpm|yarn|python
   --baseline last-tag|git:<ref>|npm:latest|none
   --format text|json|markdown|sarif
   --fail-on-severity none|info|low|medium|high|critical

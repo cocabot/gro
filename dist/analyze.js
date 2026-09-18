@@ -28,6 +28,9 @@ export async function analyze(options = {}) {
                 if (trackedSet.has(relative)) {
                     continue;
                 }
+                if (isPythonMetadataPath(relative)) {
+                    continue;
+                }
                 if (config.allowUntracked.some((glob) => matchGlob(relative, glob))) {
                     continue;
                 }
@@ -203,6 +206,12 @@ function collectDeclaredPackagePaths(cwd) {
     catch {
         return [];
     }
+}
+function isPythonMetadataPath(relative) {
+    return (/(^|\/)[^/]+\.dist-info(\/|$)/.test(relative) ||
+        /(^|\/)[^/]+\.egg-info(\/|$)/.test(relative) ||
+        relative === "PKG-INFO" ||
+        relative === "setup.cfg");
 }
 function countBySeverity(findings) {
     const counts = {

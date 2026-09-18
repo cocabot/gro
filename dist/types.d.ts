@@ -1,5 +1,5 @@
 export type Severity = "critical" | "high" | "medium" | "low" | "info";
-export type PackOracle = "auto" | "npm" | "pnpm" | "yarn";
+export type PackOracle = "auto" | "npm" | "pnpm" | "yarn" | "python";
 export type FindingKind = "packed-untracked" | "deny-glob" | "secret-filename" | "secret-content" | "missing-required" | "missing-package-path" | "unpacked-size" | "dangerous-files-field" | "baseline-added" | "baseline-removed";
 export interface PackedFile {
     path: string;

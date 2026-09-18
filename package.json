@@ -1,6 +1,6 @@
 {
   "name": "packgate",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Fail CI when npm, pnpm, or yarn pack would ship secrets, untracked files, or drop required package files.",
   "keywords": [
     "npm",

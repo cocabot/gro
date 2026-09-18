@@ -50,7 +50,9 @@ pre-commit clones the hook repo and installs it with Node. Again, no npmjs packa
 3. `yarn.lock` → yarn
 4. otherwise npm
 
-The chosen binary must be on `PATH`. GitHub-hosted runners have npm. Enable Corepack or add a setup step for pnpm/yarn when those lockfiles are present.
+If there is no `package.json` but `pyproject.toml` or `setup.py` exists, `auto` uses `python3 -m build`. That needs the `build` package (`python3 -m pip install build`).
+
+The chosen binary must be on `PATH`. GitHub-hosted runners have npm. Enable Corepack or add a setup step for pnpm/yarn when those lockfiles are present. Python packages need `python3` and `python3 -m build`.
 
 ## GitHub Pages
 

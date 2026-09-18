@@ -30,7 +30,7 @@
 | `fail-on-severity` | `high` | Threshold or `none` |
 | `scan-contents` | `true` | Scan packed file contents |
 | `git` | `true` | Compare with `git ls-files` |
-| `oracle` | `auto` | `auto`, `npm`, `pnpm`, or `yarn` |
+| `oracle` | `auto` | `auto`, `npm`, `pnpm`, `yarn`, or `python` |
 | `baseline` | empty | `last-tag`, `git:<ref>`, `npm:latest`, or empty |
 
 ## Outputs

@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "leaky-python-example"
+version = "0.0.0"
+description = "Demonstration only. Do not publish."
+
+[tool.setuptools.package-data]
+leaky = ["*", ".env"]

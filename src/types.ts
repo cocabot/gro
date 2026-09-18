@@ -1,6 +1,6 @@
 export type Severity = "critical" | "high" | "medium" | "low" | "info";
 
-export type PackOracle = "auto" | "npm" | "pnpm" | "yarn";
+export type PackOracle = "auto" | "npm" | "pnpm" | "yarn" | "python";
 
 export type FindingKind =
   | "packed-untracked"

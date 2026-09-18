@@ -1,5 +1,5 @@
 name: packgate
-description: Fail if npm, pnpm, or yarn pack would ship secrets, untracked files, or drop required package files
+description: Fail if npm, pnpm, yarn pack, or python -m build would ship secrets, untracked files, or drop required package files
 author: cocabot
 branding:
   icon: package
@@ -30,7 +30,7 @@ inputs:
     required: false
     default: "true"
   oracle:
-    description: Pack command to inspect (auto, npm, pnpm, or yarn)
+    description: Pack command to inspect (auto, npm, pnpm, yarn, or python)
     required: false
     default: auto
   baseline:
@@ -47,7 +47,7 @@ outputs:
   packed-file-count:
     description: Number of files the pack command would include
   resolved-oracle:
-    description: Pack command that was actually used (npm, pnpm, or yarn)
+    description: Pack command that was actually used (npm, pnpm, yarn, or python)
   baseline:
     description: Resolved baseline label (empty when unused)
 runs:

@@ -19,18 +19,24 @@ export interface PackResult {
 }
 
 export function resolveOracle(cwd: string, requested: PackOracle = "auto"): ResolvedOracle {
-  if (requested === "npm" || requested === "pnpm" || requested === "yarn") {
+  if (requested === "npm" || requested === "pnpm" || requested === "yarn" || requested === "python") {
     return requested;
   }
-  const fromField = packageManagerField(cwd);
-  if (fromField) {
-    return fromField;
+  if (existsSync(path.join(cwd, "package.json"))) {
+    const fromField = packageManagerField(cwd);
+    if (fromField) {
+      return fromField;
+    }
+    if (existsSync(path.join(cwd, "pnpm-lock.yaml"))) {
+      return "pnpm";
+    }
+    if (existsSync(path.join(cwd, "yarn.lock"))) {
+      return "yarn";
+    }
+    return "npm";
   }
-  if (existsSync(path.join(cwd, "pnpm-lock.yaml"))) {
-    return "pnpm";
-  }
-  if (existsSync(path.join(cwd, "yarn.lock"))) {
-    return "yarn";
+  if (existsSync(path.join(cwd, "pyproject.toml")) || existsSync(path.join(cwd, "setup.py"))) {
+    return "python";
   }
   return "npm";
 }
@@ -39,25 +45,26 @@ export function packPackage(cwd: string, requested: PackOracle = "auto"): PackRe
   const oracle = resolveOracle(cwd, requested);
   const temp = mkdtempSync(path.join(tmpdir(), "packgate-"));
   try {
-    const archivePath = createTarball(cwd, oracle, temp);
-    const archive = readFileSync(archivePath);
+    const archives = createArchives(cwd, oracle, temp);
     const contents = new Map<string, Buffer>();
     const files: PackedFile[] = [];
-    for (const entry of readTarGz(archive)) {
-      const relative = stripPackagePrefix(entry.name);
-      if (!relative) {
-        continue;
+    for (const archivePath of archives) {
+      for (const entry of readArchive(archivePath)) {
+        if (contents.has(entry.path)) {
+          continue;
+        }
+        contents.set(entry.path, entry.content);
+        files.push({ path: entry.path, size: entry.size });
       }
-      contents.set(relative, entry.content);
-      files.push({ path: relative, size: entry.size });
     }
-    const pkg = readPackedPackageJson(cwd, contents);
+    const identity = readPackedIdentity(cwd, oracle, contents);
+    const primary = archives[0];
     return {
       oracle,
-      packageName: pkg.name ?? "package",
-      version: pkg.version ?? "0.0.0",
-      filename: path.basename(archivePath),
-      packedSize: archive.length,
+      packageName: identity.name ?? "package",
+      version: identity.version ?? "0.0.0",
+      filename: primary ? path.basename(primary) : "package",
+      packedSize: archives.reduce((sum, file) => sum + readFileSync(file).length, 0),
       unpackedSize: files.reduce((sum, file) => sum + file.size, 0),
       files,
       contents,
@@ -70,26 +77,93 @@ export function packPackage(cwd: string, requested: PackOracle = "auto"): PackRe
 /** @deprecated Use packPackage. Kept as the npm-named alias. */
 export const npmPack = packPackage;
 
-function createTarball(cwd: string, oracle: ResolvedOracle, temp: string): string {
+function createArchives(cwd: string, oracle: ResolvedOracle, temp: string): string[] {
   switch (oracle) {
+    case "python":
+      run(cwd, "python3", ["-m", "build", "--outdir", temp]);
+      return pythonArtifacts(temp);
     case "pnpm":
       run(cwd, "pnpm", ["pack", "--pack-destination", temp]);
-      return onlyTarball(temp, "pnpm pack");
+      return [onlyTarball(temp, "pnpm pack")];
     case "yarn": {
       const dest = path.join(temp, "package.tgz");
       run(cwd, "yarn", yarnPackArgs(dest));
       if (existsSync(dest)) {
-        return dest;
+        return [dest];
       }
-      return onlyTarball(temp, "yarn pack");
+      return [onlyTarball(temp, "yarn pack")];
     }
     default:
       run(cwd, "npm", ["pack", "--pack-destination", temp], {
         NPM_CONFIG_FUND: "false",
         NPM_CONFIG_AUDIT: "false",
       });
-      return onlyTarball(temp, "npm pack");
+      return [onlyTarball(temp, "npm pack")];
   }
+}
+
+function pythonArtifacts(dir: string): string[] {
+  const wheels = readdirSync(dir).filter((name) => name.endsWith(".whl"));
+  const sdists = readdirSync(dir).filter((name) => name.endsWith(".tar.gz"));
+  const paths = [...wheels, ...sdists].map((name) => path.join(dir, name));
+  if (paths.length === 0) {
+    throw new Error(`python -m build produced no wheel or sdist in ${dir}`);
+  }
+  return paths;
+}
+
+function readArchive(archivePath: string): { path: string; size: number; content: Buffer }[] {
+  if (archivePath.endsWith(".whl") || archivePath.endsWith(".zip")) {
+    return readZipMembers(archivePath);
+  }
+  const archive = readFileSync(archivePath);
+  const prefix = sdistPrefix(path.basename(archivePath));
+  const entries: { path: string; size: number; content: Buffer }[] = [];
+  for (const entry of readTarGz(archive)) {
+    let relative = stripPackagePrefix(entry.name);
+    if (prefix && relative === prefix) {
+      continue;
+    }
+    if (prefix && relative.startsWith(`${prefix}/`)) {
+      relative = relative.slice(prefix.length + 1);
+    }
+    if (!relative) {
+      continue;
+    }
+    entries.push({ path: relative, size: entry.size, content: entry.content });
+  }
+  return entries;
+}
+
+function sdistPrefix(filename: string): string | null {
+  const match = filename.match(/^(.*)\.tar\.gz$/);
+  return match?.[1] ?? null;
+}
+
+function readZipMembers(archivePath: string): { path: string; size: number; content: Buffer }[] {
+  const script = [
+    "import json, sys, zipfile, base64",
+    "archive = zipfile.ZipFile(sys.argv[1])",
+    "items = []",
+    "for info in archive.infolist():",
+    "    name = info.filename.replace('\\\\', '/')",
+    "    if name.endswith('/') or info.is_dir():",
+    "        continue",
+    "    data = archive.read(info.filename)",
+    "    items.append({'path': name, 'size': info.file_size, 'b64': base64.b64encode(data).decode('ascii')})",
+    "print(json.dumps(items))",
+  ].join("\n");
+  const raw = execFileSync("python3", ["-c", script, archivePath], {
+    encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  const items = JSON.parse(raw) as { path: string; size: number; b64: string }[];
+  return items.map((item) => ({
+    path: item.path,
+    size: item.size,
+    content: Buffer.from(item.b64, "base64"),
+  }));
 }
 
 function yarnPackArgs(dest: string): string[] {
@@ -153,6 +227,39 @@ function packageManagerField(cwd: string): ResolvedOracle | null {
     return null;
   } catch {
     return null;
+  }
+}
+
+function readPackedIdentity(
+  cwd: string,
+  oracle: ResolvedOracle,
+  contents: Map<string, Buffer>,
+): { name?: string; version?: string } {
+  if (oracle === "python") {
+    for (const [relative, body] of contents) {
+      if (relative.endsWith(".dist-info/METADATA") || relative === "PKG-INFO") {
+        return parsePkgInfo(body.toString("utf8"));
+      }
+    }
+    return parsePyproject(cwd);
+  }
+  return readPackedPackageJson(cwd, contents);
+}
+
+function parsePkgInfo(text: string): { name?: string; version?: string } {
+  const name = text.match(/^Name:\s*(.+)$/m)?.[1]?.trim();
+  const version = text.match(/^Version:\s*(.+)$/m)?.[1]?.trim();
+  return { ...(name ? { name } : {}), ...(version ? { version } : {}) };
+}
+
+function parsePyproject(cwd: string): { name?: string; version?: string } {
+  try {
+    const text = readFileSync(path.join(cwd, "pyproject.toml"), "utf8");
+    const name = text.match(/^name\s*=\s*"([^"]+)"/m)?.[1];
+    const version = text.match(/^version\s*=\s*"([^"]+)"/m)?.[1];
+    return { ...(name ? { name } : {}), ...(version ? { version } : {}) };
+  } catch {
+    return {};
   }
 }
 
