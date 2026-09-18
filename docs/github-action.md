@@ -1,7 +1,7 @@
 # GitHub Action
 
 ```yaml
-- uses: cocabot/gro@v0.2.0
+- uses: cocabot/gro@v0.3.0
   with:
     path: .
     fail-on-severity: high
@@ -9,6 +9,15 @@
     scan-contents: true
     git: true
     oracle: auto
+    baseline: last-tag
+```
+
+`last-tag` needs the tag objects on the runner:
+
+```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
 ```
 
 ## Inputs
@@ -22,6 +31,7 @@
 | `scan-contents` | `true` | Scan packed file contents |
 | `git` | `true` | Compare with `git ls-files` |
 | `oracle` | `auto` | `auto`, `npm`, `pnpm`, or `yarn` |
+| `baseline` | empty | `last-tag`, `git:<ref>`, `npm:latest`, or empty |
 
 ## Outputs
 
@@ -32,6 +42,7 @@
 | `high-count` | High findings |
 | `packed-file-count` | Files in the tarball |
 | `resolved-oracle` | Pack command that ran (`npm`, `pnpm`, or `yarn`) |
+| `baseline` | Resolved baseline label, empty when unused |
 
 The action writes a job summary and GitHub workflow annotations. It only needs `contents: read`.
 
@@ -53,7 +64,7 @@ If the published tarball is supposed to contain `dist/`, run your build first. p
 Pin the action to a tag or a commit SHA. Tags can move; SHAs do not.
 
 ```yaml
-- uses: cocabot/gro@v0.2.0
+- uses: cocabot/gro@v0.3.0
 # or
 - uses: cocabot/gro@<commit-sha>
 ```

@@ -21,7 +21,7 @@ That clones the GitHub repo; it does not talk to the npmjs registry for packgate
 ## GitHub Action
 
 ```yaml
-- uses: cocabot/gro@v0.2.0
+- uses: cocabot/gro@v0.3.0
   with:
     fail-on-severity: high
     oracle: auto
@@ -34,7 +34,7 @@ The action runs from this repository's `dist/`. Consumers do not publish anythin
 ```yaml
 repos:
   - repo: https://github.com/cocabot/gro
-    rev: v0.2.0
+    rev: v0.3.0
     hooks:
       - id: packgate
 ```
@@ -54,7 +54,7 @@ The chosen binary must be on `PATH`. GitHub-hosted runners have npm. Enable Core
 
 ## GitHub Pages
 
-The `site/` directory is a static landing page. After merge to `main`, enable **Settings → Pages → GitHub Actions** in this repository (no extra account). The `Pages` workflow deploys it.
+The `site/` directory is a static landing page. GitHub Pages is not turned on for this repository yet, so the deploy workflow is `workflow_dispatch` only (it will fail on every push until Pages is enabled). After **Settings → Pages → GitHub Actions**, run the Pages workflow from the Actions tab.
 
 ## What this project will not do
 

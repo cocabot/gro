@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-09-18
+
+### Added
+
+- `--baseline last-tag|git:<ref>|npm:latest` compares packed paths to that tarball (`baseline-added`, `baseline-removed`)
+- Action input/output `baseline`
+
+### Changed
+
+- GitHub Pages deploy is `workflow_dispatch` only until Pages is enabled on the repository
+
 ## [0.2.0] - 2026-09-18
 
 ### Added
@@ -35,5 +46,6 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - GitHub Action with job summary, annotations, and outputs
 - `packgate.json` and `package.json#packgate` configuration
 
+[0.3.0]: https://github.com/cocabot/gro/releases/tag/v0.3.0
 [0.2.0]: https://github.com/cocabot/gro/releases/tag/v0.2.0
 [0.1.0]: https://github.com/cocabot/gro/releases/tag/v0.1.0

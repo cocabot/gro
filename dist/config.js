@@ -33,6 +33,7 @@ export function defaultConfig() {
         scanContents: true,
         git: true,
         oracle: "auto",
+        baseline: null,
     };
 }
 export function loadConfig(cwd, configPath, overrides = {}) {
@@ -81,6 +82,9 @@ function mergeConfig(...parts) {
         }
         if (part.oracle) {
             result.oracle = part.oracle;
+        }
+        if (part.baseline !== undefined) {
+            result.baseline = part.baseline;
         }
     }
     return result;

@@ -1,5 +1,11 @@
 # Troubleshooting
 
+## Baseline not found (exit 2)
+
+`--baseline last-tag` needs at least one git tag reachable from the checkout. GitHub Actions defaults to a shallow clone. Use `fetch-depth: 0` on `actions/checkout`, or pass `--baseline git:<sha>`.
+
+`--baseline npm:latest` shells out to `npm view <name>@latest dist.tarball`. That needs a public registry package (no npmjs login). If this project is GitHub-only, use `last-tag` instead.
+
 ## Pack command failed (exit 2)
 
 packgate shells out to `npm pack`, `pnpm pack`, or `yarn pack` depending on `--oracle` (default `auto`). Failures usually mean:

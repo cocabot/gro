@@ -19,12 +19,14 @@ export async function runAction() {
     const scanContents = parseBoolean(getInput("scan-contents"), true);
     const git = parseBoolean(getInput("git"), true);
     const oracle = (getInput("oracle", "auto") || "auto");
+    const baseline = getInput("baseline");
     const result = await analyze({
         cwd,
         ...(configPath ? { configPath } : {}),
         scanContents,
         git,
         oracle,
+        ...(baseline ? { baseline } : {}),
     });
     const report = formatReport(result, format);
     process.stdout.write(report);
@@ -43,6 +45,7 @@ export async function runAction() {
             `high-count=${result.counts.high}`,
             `packed-file-count=${result.packedFiles.length}`,
             `resolved-oracle=${result.oracle}`,
+            `baseline=${result.baseline?.resolved ?? ""}`,
             "",
         ].join("\n"));
     }

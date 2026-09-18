@@ -1,6 +1,6 @@
 export type Severity = "critical" | "high" | "medium" | "low" | "info";
 export type PackOracle = "auto" | "npm" | "pnpm" | "yarn";
-export type FindingKind = "packed-untracked" | "deny-glob" | "secret-filename" | "secret-content" | "missing-required" | "missing-package-path" | "unpacked-size" | "dangerous-files-field";
+export type FindingKind = "packed-untracked" | "deny-glob" | "secret-filename" | "secret-content" | "missing-required" | "missing-package-path" | "unpacked-size" | "dangerous-files-field" | "baseline-added" | "baseline-removed";
 export interface PackedFile {
     path: string;
     size: number;
@@ -22,6 +22,7 @@ export interface PackgateConfig {
     scanContents: boolean;
     git: boolean;
     oracle: PackOracle;
+    baseline: string | null;
 }
 export interface AnalyzeOptions {
     cwd?: string;
@@ -30,6 +31,7 @@ export interface AnalyzeOptions {
     scanContents?: boolean;
     git?: boolean;
     oracle?: PackOracle;
+    baseline?: string | null;
 }
 export interface AnalyzeResult {
     packageName: string;
@@ -39,6 +41,11 @@ export interface AnalyzeResult {
     packedSize: number;
     unpackedSize: number;
     packedFiles: PackedFile[];
+    baseline: {
+        spec: string;
+        resolved: string;
+        packedFileCount: number;
+    } | null;
     findings: Finding[];
     counts: Record<Severity, number>;
 }

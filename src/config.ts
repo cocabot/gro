@@ -37,6 +37,7 @@ export function defaultConfig(): PackgateConfig {
     scanContents: true,
     git: true,
     oracle: "auto",
+    baseline: null,
   };
 }
 
@@ -89,6 +90,9 @@ function mergeConfig(...parts: Partial<PackgateConfig>[]): PackgateConfig {
     }
     if (part.oracle) {
       result.oracle = part.oracle;
+    }
+    if (part.baseline !== undefined) {
+      result.baseline = part.baseline;
     }
   }
   return result;

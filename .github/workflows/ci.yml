@@ -61,5 +61,6 @@ jobs:
           INPUT_SCAN_CONTENTS: "true"
           INPUT_GIT: "true"
           INPUT_ORACLE: auto
+          INPUT_BASELINE: ""
           PACKGATE_ACTION: "1"
         run: node dist/action.js

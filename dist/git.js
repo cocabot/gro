@@ -21,7 +21,7 @@ export function listTrackedFiles(cwd) {
         return null;
     }
 }
-function findGitRoot(cwd) {
+export function findGitRoot(cwd) {
     let current = path.resolve(cwd);
     while (true) {
         if (existsSync(path.join(current, ".git"))) {

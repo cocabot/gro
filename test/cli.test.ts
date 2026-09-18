@@ -9,6 +9,11 @@ test("parseArgs accepts --oracle", () => {
   assert.equal(options.oracle, "yarn");
 });
 
+test("parseArgs accepts --baseline", () => {
+  const options = parseArgs(["--baseline", "last-tag"]);
+  assert.equal(options.baseline, "last-tag");
+});
+
 test("shouldFail respects the severity threshold", () => {
   const result = {
     findings: [{ id: "x", kind: "deny-glob", severity: "high", message: "nope" }],

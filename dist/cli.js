@@ -81,6 +81,9 @@ export function parseArgs(argv) {
                 options.oracle = value;
                 break;
             }
+            case "--baseline":
+                options.baseline = next();
+                break;
             default:
                 if (arg.startsWith("-")) {
                     throw new Error(`Unknown argument '${arg}'`);
@@ -103,6 +106,7 @@ Options:
   --fail-on-severity LEVEL   none|info|low|medium|high|critical (default: high)
   --print-files              List packed file paths
   --oracle auto|npm|pnpm|yarn  Pack command to inspect (default: auto)
+  --baseline SPEC              last-tag | git:<ref> | npm:latest | none
   --no-scan-contents         Skip reading tarball contents for secret patterns
   --no-git                   Skip comparing packed files to git ls-files
   -h, --help                 Show help
@@ -138,6 +142,7 @@ export async function main(argv = process.argv.slice(2)) {
             scanContents: options.scanContents,
             git: options.git,
             oracle: options.oracle,
+            ...(options.baseline === undefined ? {} : { baseline: options.baseline }),
         });
         if (options.printFiles) {
             for (const file of result.packedFiles) {

@@ -10,7 +10,9 @@ export type FindingKind =
   | "missing-required"
   | "missing-package-path"
   | "unpacked-size"
-  | "dangerous-files-field";
+  | "dangerous-files-field"
+  | "baseline-added"
+  | "baseline-removed";
 
 export interface PackedFile {
   path: string;
@@ -35,6 +37,7 @@ export interface PackgateConfig {
   scanContents: boolean;
   git: boolean;
   oracle: PackOracle;
+  baseline: string | null;
 }
 
 export interface AnalyzeOptions {
@@ -44,6 +47,7 @@ export interface AnalyzeOptions {
   scanContents?: boolean;
   git?: boolean;
   oracle?: PackOracle;
+  baseline?: string | null;
 }
 
 export interface AnalyzeResult {
@@ -54,6 +58,11 @@ export interface AnalyzeResult {
   packedSize: number;
   unpackedSize: number;
   packedFiles: PackedFile[];
+  baseline: {
+    spec: string;
+    resolved: string;
+    packedFileCount: number;
+  } | null;
   findings: Finding[];
   counts: Record<Severity, number>;
 }

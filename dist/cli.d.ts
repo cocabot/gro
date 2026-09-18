@@ -12,6 +12,7 @@ export interface CliOptions {
     help: boolean;
     version: boolean;
     oracle: PackOracle;
+    baseline?: string;
 }
 export declare function parseArgs(argv: string[]): CliOptions;
 export declare function helpText(): string;

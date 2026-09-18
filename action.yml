@@ -33,6 +33,10 @@ inputs:
     description: Pack command to inspect (auto, npm, pnpm, or yarn)
     required: false
     default: auto
+  baseline:
+    description: Compare packed paths to last-tag, git:<ref>, or npm:latest
+    required: false
+    default: ""
 outputs:
   finding-count:
     description: Total number of findings
@@ -44,6 +48,8 @@ outputs:
     description: Number of files the pack command would include
   resolved-oracle:
     description: Pack command that was actually used (npm, pnpm, or yarn)
+  baseline:
+    description: Resolved baseline label (empty when unused)
 runs:
   using: node20
   main: dist/action.js

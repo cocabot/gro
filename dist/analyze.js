@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { baselineFindings, loadBaseline } from "./baseline.js";
 import { loadConfig } from "./config.js";
 import { listTrackedFiles } from "./git.js";
 import { isDenied, matchGlob, normalizePosix } from "./glob.js";
@@ -12,6 +13,7 @@ export async function analyze(options = {}) {
         ...(options.scanContents === undefined ? {} : { scanContents: options.scanContents }),
         ...(options.git === undefined ? {} : { git: options.git }),
         ...(options.oracle === undefined ? {} : { oracle: options.oracle }),
+        ...(options.baseline === undefined ? {} : { baseline: options.baseline }),
     });
     const packed = packPackage(cwd, config.oracle);
     const findings = [];
@@ -111,6 +113,10 @@ export async function analyze(options = {}) {
             message: `Unpacked tarball is ${packed.unpackedSize} bytes, which exceeds the configured budget of ${config.maxUnpackedBytes} bytes.`,
         });
     }
+    const baseline = await loadBaseline(cwd, config.baseline, packed.oracle);
+    if (baseline) {
+        findings.push(...baselineFindings(packed.files, baseline));
+    }
     return {
         packageName: packed.packageName,
         version: packed.version,
@@ -119,6 +125,9 @@ export async function analyze(options = {}) {
         packedSize: packed.packedSize,
         unpackedSize: packed.unpackedSize,
         packedFiles: packed.files,
+        baseline: baseline
+            ? { spec: baseline.spec, resolved: baseline.resolved, packedFileCount: baseline.packedFileCount }
+            : null,
         findings: dedupe(findings),
         counts: countBySeverity(findings),
     };

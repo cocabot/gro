@@ -22,7 +22,7 @@ export function listTrackedFiles(cwd: string): string[] | null {
   }
 }
 
-function findGitRoot(cwd: string): string | null {
+export function findGitRoot(cwd: string): string | null {
   let current = path.resolve(cwd);
   while (true) {
     if (existsSync(path.join(current, ".git"))) {

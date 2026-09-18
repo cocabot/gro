@@ -46,7 +46,7 @@ npm install github:cocabot/gro
     node-version: "22"
 - run: npm ci
 - run: npm run build --if-present
-- uses: cocabot/gro@v0.2.0
+- uses: cocabot/gro@v0.3.0
   with:
     fail-on-severity: high
 ```
@@ -57,7 +57,7 @@ If `package.json` `files` includes `dist/`, build first so the tarball matches w
 
 ```yaml
 - repo: https://github.com/cocabot/gro
-  rev: v0.2.0
+  rev: v0.3.0
   hooks:
     - id: packgate
 ```
@@ -86,6 +86,7 @@ Exit codes:
 5. **Declared package paths** — `main`, `module`, `types`, `bin`, and `exports` targets must exist in the tarball.
 6. **Dangerous `files` field** — `*`, `**`, and `**/*` are flagged because they reintroduce gitignored files.
 7. **Size budget** — optional `maxUnpackedBytes`.
+8. **Baseline diff** — optional `--baseline last-tag` / `git:<ref>` / `npm:latest` reports packed paths added or removed since that tarball.
 
 ## Configuration
 
@@ -99,7 +100,8 @@ Exit codes:
   "maxUnpackedBytes": 1048576,
   "scanContents": true,
   "git": true,
-  "oracle": "auto"
+  "oracle": "auto",
+  "baseline": null
 }
 ```
 
@@ -110,6 +112,7 @@ See [docs/configuration.md](docs/configuration.md).
 ```text
 packgate [directory]
   --oracle auto|npm|pnpm|yarn
+  --baseline last-tag|git:<ref>|npm:latest|none
   --format text|json|markdown|sarif
   --fail-on-severity none|info|low|medium|high|critical
   --print-files

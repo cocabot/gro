@@ -23,6 +23,7 @@ export async function runAction(): Promise<number> {
   const scanContents = parseBoolean(getInput("scan-contents"), true);
   const git = parseBoolean(getInput("git"), true);
   const oracle = (getInput("oracle", "auto") || "auto") as PackOracle;
+  const baseline = getInput("baseline");
 
   const result = await analyze({
     cwd,
@@ -30,6 +31,7 @@ export async function runAction(): Promise<number> {
     scanContents,
     git,
     oracle,
+    ...(baseline ? { baseline } : {}),
   });
   const report = formatReport(result, format);
   process.stdout.write(report);
@@ -50,6 +52,7 @@ export async function runAction(): Promise<number> {
         `high-count=${result.counts.high}`,
         `packed-file-count=${result.packedFiles.length}`,
         `resolved-oracle=${result.oracle}`,
+        `baseline=${result.baseline?.resolved ?? ""}`,
         "",
       ].join("\n"),
     );

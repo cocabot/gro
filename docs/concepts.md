@@ -43,6 +43,7 @@ A narrower allow list is the usual fix:
 - It will not rotate leaked credentials. If a finding is `secret-content` or `secret-filename`, treat the value as compromised until you know otherwise.
 - It is not a general secret scanner. Patterns are intentionally few and high-confidence to keep CI noise low.
 - It uses the chosen pack command as the oracle (`npm`, `pnpm`, or `yarn`). Those tools can still differ from each other; force `--oracle` when you need a specific one.
+- `--baseline` compares packed **paths**, not file contents. A rewritten `dist/index.js` with the same path is invisible to the baseline check.
 - License compatibility of dependencies is out of scope.
 
 ## Related tools

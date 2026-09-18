@@ -47,6 +47,9 @@ function formatText(result: AnalyzeResult): string {
     `packgate ${result.packageName}@${result.version} (${result.oracle} pack)`,
     `packed ${result.packedFiles.length} files (${result.unpackedSize} unpacked bytes, ${result.packedSize} packed bytes)`,
   ];
+  if (result.baseline) {
+    lines.push(`baseline ${result.baseline.resolved} (${result.baseline.packedFileCount} files)`);
+  }
   if (result.findings.length === 0) {
     lines.push("No findings.");
     return `${lines.join("\n")}\n`;
@@ -66,9 +69,11 @@ function formatMarkdown(result: AnalyzeResult): string {
     `- Packed files: **${result.packedFiles.length}**`,
     `- Unpacked size: **${result.unpackedSize}** bytes`,
     `- Packed size: **${result.packedSize}** bytes`,
-    `- Findings: **${result.findings.length}**`,
-    "",
   ];
+  if (result.baseline) {
+    lines.push(`- Baseline: **${result.baseline.resolved}** (${result.baseline.packedFileCount} files)`);
+  }
+  lines.push(`- Findings: **${result.findings.length}**`, "");
   if (result.findings.length === 0) {
     lines.push("No findings.");
     return `${lines.join("\n")}\n`;

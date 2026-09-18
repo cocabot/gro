@@ -19,6 +19,7 @@ All keys are optional. Missing keys keep the defaults.
 | `scanContents` | boolean | `true` | Read packed files for high-confidence secret patterns. |
 | `git` | boolean | `true` | Compare packed paths to `git ls-files`. |
 | `oracle` | `"auto"` \| `"npm"` \| `"pnpm"` \| `"yarn"` | `"auto"` | Which pack command to inspect. |
+| `baseline` | string \| null | `null` | Compare packed paths to another tarball. `last-tag`, `git:v1.0.0`, or `npm:latest`. |
 
 Replacing `deny` replaces the **entire** default list. Copy the defaults you still want.
 
@@ -68,8 +69,8 @@ Replacing `deny` replaces the **entire** default list. Copy the defaults you sti
 | Kind | Default severity |
 | --- | --- |
 | `secret-content`, `secret-filename`, `missing-package-path` | critical |
-| `packed-untracked`, `deny-glob`, `missing-required` | high |
-| `dangerous-files-field` (no packed secret names) , `unpacked-size` | medium |
+| `packed-untracked`, `deny-glob`, `missing-required`, `baseline-removed` | high |
+| `dangerous-files-field` (no packed secret names) , `unpacked-size`, `baseline-added` | medium |
 | `dangerous-files-field` when packed names look like secrets | high |
 
 `--fail-on-severity high` (the default) fails on high and critical.
