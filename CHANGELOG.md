@@ -17,6 +17,7 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ### Changed
 
 - GitHub is the documented distribution channel (`npx github:cocabot/gro`, Action, pre-commit). npmjs is not required.
+- Findings that mention the pack command use the resolved oracle name (`npm` / `pnpm` / `yarn`)
 
 ## [0.1.0] - 2026-09-17
 

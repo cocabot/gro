@@ -38,7 +38,7 @@ export async function analyze(options: AnalyzeOptions = {}): Promise<AnalyzeResu
           kind: "packed-untracked",
           severity: "high",
           path: relative,
-          message: `Packed file '${relative}' is not tracked by git. ${packed.oracle} pack does not use .gitignore when a files field or .npmignore is present, so untracked files can be published.`,
+          message: `Packed file '${relative}' is not tracked by git. ${packed.oracle} pack can include files git never saw, so untracked files can be published.`,
         });
       }
     }

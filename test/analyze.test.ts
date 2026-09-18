@@ -132,13 +132,40 @@ function hasBin(name: string): boolean {
 }
 
 test(
-  "pnpm oracle still fails the leaky files:* .env gate",
+  "pnpm oracle flags an untracked file that is not gitignored",
   { skip: hasBin("pnpm") ? false : "pnpm not installed" },
   async () => {
     const cwd = makePackage({
       files: {
         "package.json": JSON.stringify({
-          name: "pnpm-leaky",
+          name: "pnpm-untracked",
+          version: "1.0.0",
+          files: ["*"],
+        }),
+        "README.md": "example",
+        LICENSE: "MIT",
+        "accidental.js": "export default 1\n",
+      },
+      track: ["package.json", "README.md", "LICENSE"],
+    });
+    const result = await analyze({ cwd, oracle: "pnpm" });
+    assert.equal(result.oracle, "pnpm");
+    assert.equal(
+      result.findings.some((finding) => finding.kind === "packed-untracked" && finding.path === "accidental.js"),
+      true,
+    );
+    assert.equal(shouldFail(result, "high"), true);
+  },
+);
+
+test(
+  "pnpm oracle omits a gitignored .env but still flags a broad files field",
+  { skip: hasBin("pnpm") ? false : "pnpm not installed" },
+  async () => {
+    const cwd = makePackage({
+      files: {
+        "package.json": JSON.stringify({
+          name: "pnpm-gitignored",
           version: "1.0.0",
           files: ["*"],
         }),
@@ -151,6 +178,34 @@ test(
     });
     const result = await analyze({ cwd, oracle: "pnpm" });
     assert.equal(result.oracle, "pnpm");
+    const kinds = new Set(result.findings.map((finding) => finding.kind));
+    assert.equal(kinds.has("packed-untracked"), false);
+    assert.equal(kinds.has("secret-filename"), false);
+    assert.equal(kinds.has("dangerous-files-field"), true);
+    assert.equal(shouldFail(result, "high"), false);
+  },
+);
+
+test(
+  "yarn oracle still fails the leaky files:* .env gate",
+  { skip: hasBin("yarn") ? false : "yarn not installed" },
+  async () => {
+    const cwd = makePackage({
+      files: {
+        "package.json": JSON.stringify({
+          name: "yarn-leaky",
+          version: "1.0.0",
+          files: ["*"],
+        }),
+        "README.md": "example",
+        LICENSE: "MIT",
+        ".env": "NPM_TOKEN=npm_abcdefghijklmnopqrstuvwxyz\n",
+      },
+      gitignore: [".env"],
+      track: ["package.json", "README.md", "LICENSE", ".gitignore"],
+    });
+    const result = await analyze({ cwd, oracle: "yarn" });
+    assert.equal(result.oracle, "yarn");
     const kinds = new Set(result.findings.map((finding) => finding.kind));
     assert.equal(kinds.has("packed-untracked"), true);
     assert.equal(kinds.has("secret-filename"), true);

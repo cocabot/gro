@@ -18,10 +18,11 @@ Maintainers of JavaScript packages who want a last gate before publish, without 
 
 Those tools are complementary. packgate exists because the publish artifact is a third tree, distinct from git and from the manifest.
 
-This is not theoretical. With `files: ["*"]`, npm, pnpm, and yarn will pack a gitignored `.env`:
+This is not theoretical. With `files: ["*"]`, **npm and Yarn** pack a gitignored `.env`. pnpm pack in a git repo usually still honors `.gitignore`, but it will pack **untracked** files that are not ignored. packgate runs the pack command you actually publish with, so the gate matches that tree.
 
 ```text
-files: ["*"]  +  .gitignore containing .env  →  .env is still in the tarball
+files: ["*"]  +  .gitignore containing .env  →  npm/yarn: .env is in the tarball
+                                             →  pnpm:     .env is omitted
 ```
 
 ## Install (GitHub only)

@@ -26,7 +26,9 @@ The dangerous case is a **broad `files` allow list**:
 }
 ```
 
-`*` is not "everything git tracks". It is "everything npm's pack walker can see", including files you ignored in git so they would never be committed. `.env`, `credentials.json`, and editor swap files can all ride along.
+`*` is not "everything git tracks". For **npm** and **Yarn** it is "everything the pack walker can see", including files you ignored in git so they would never be committed. `.env`, `credentials.json`, and editor swap files can all ride along.
+
+**pnpm pack** in a git repository is stricter: it typically still honors `.gitignore`, so the same `files: ["*"]` + gitignored `.env` footgun often does **not** leak there. pnpm will still pack **untracked** files that are not ignored. That difference is why `--oracle` exists — inspect the client you would publish with.
 
 A narrower allow list is the usual fix:
 
