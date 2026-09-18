@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>packgate — inspect the tarball npm publish actually ships</title>
+    <meta
+      name="description"
+      content="packgate fails CI when npm, pnpm, or yarn pack would ship secrets, untracked files, or drop required package files. Distributed from GitHub. No npmjs account required."
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #111;
+        --muted: #444;
+        --bg: #faf8f5;
+        --card: #fff;
+        --accent: #b42318;
+        --border: #ddd;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: #f4f1ea;
+          --muted: #c2bdb3;
+          --bg: #161410;
+          --card: #1f1b16;
+          --border: #3a342c;
+        }
+      }
+      body {
+        margin: 0;
+        font: 16px/1.5 ui-sans-serif, system-ui, sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      main {
+        max-width: 44rem;
+        margin: 0 auto;
+        padding: 3rem 1.25rem 4rem;
+      }
+      h1 {
+        font-size: 2rem;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.3rem;
+      }
+      .lede {
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+      }
+      pre,
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.9em;
+      }
+      pre {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 1rem;
+        overflow: auto;
+      }
+      a {
+        color: var(--accent);
+      }
+      ul {
+        padding-left: 1.2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>packgate</h1>
+      <p class="lede">
+        Fail CI when <code>npm pack</code>, <code>pnpm pack</code>, or
+        <code>yarn pack</code> would ship secrets, untracked files, or drop the
+        files your package claims to export.
+      </p>
+      <p>
+        <code>.gitignore</code> does not decide what a registry upload contains.
+        packgate inspects the tarball those pack commands actually write.
+      </p>
+      <h2>Use it without creating accounts</h2>
+      <p>GitHub is the distribution channel. No npmjs login.</p>
+      <pre>npx --yes github:cocabot/gro</pre>
+      <pre>- uses: cocabot/gro@v0.2.0</pre>
+      <pre>- repo: https://github.com/cocabot/gro
+  rev: v0.2.0
+  hooks:
+    - id: packgate</pre>
+      <h2>Links</h2>
+      <ul>
+        <li><a href="https://github.com/cocabot/gro">Source and docs</a></li>
+        <li><a href="https://github.com/cocabot/gro/releases/tag/v0.2.0">v0.2.0 release</a></li>
+        <li><a href="https://github.com/cocabot/gro/blob/main/docs/concepts.md">git vs pack</a></li>
+      </ul>
+    </main>
+  </body>
+</html>

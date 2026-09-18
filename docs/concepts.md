@@ -1,12 +1,14 @@
-# Concepts: git, `.gitignore`, and `npm pack`
+# Concepts: git, `.gitignore`, and pack tarballs
 
 Three different file sets show up when you publish a JavaScript package:
 
 1. **The working tree** — everything on disk.
 2. **The git tree** — `git ls-files`. `.gitignore` only affects this set.
-3. **The npm tarball** — `npm pack`. This is what `npm publish` uploads.
+3. **The pack tarball** — `npm pack`, `pnpm pack`, or `yarn pack`. This is what a registry upload contains.
 
 packgate compares (3) with (2) and with a deny list. It does not try to replace a secret scanner for git history.
+
+`--oracle auto` picks the pack command from `package.json#packageManager`, then `pnpm-lock.yaml` / `yarn.lock`, then npm. Pass `--oracle npm|pnpm|yarn` to force one.
 
 ## How npm decides what to pack
 
@@ -38,7 +40,7 @@ A narrower allow list is the usual fix:
 
 - It will not rotate leaked credentials. If a finding is `secret-content` or `secret-filename`, treat the value as compromised until you know otherwise.
 - It is not a general secret scanner. Patterns are intentionally few and high-confidence to keep CI noise low.
-- It uses `npm pack` as the oracle. `pnpm pack` / `yarn pack` can differ; see the issue tracker for ecosystem coverage.
+- It uses the chosen pack command as the oracle (`npm`, `pnpm`, or `yarn`). Those tools can still differ from each other; force `--oracle` when you need a specific one.
 - License compatibility of dependencies is out of scope.
 
 ## Related tools

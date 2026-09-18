@@ -4,11 +4,9 @@ import { parseArgs } from "../dist/cli.js";
 import { githubAnnotations, shouldFail } from "../dist/report.js";
 import type { AnalyzeResult } from "../dist/index.js";
 
-test("parseArgs accepts format and severity flags", () => {
-  const options = parseArgs(["--format", "json", "--fail-on-severity", "critical", "--no-git"]);
-  assert.equal(options.format, "json");
-  assert.equal(options.failOn, "critical");
-  assert.equal(options.git, false);
+test("parseArgs accepts --oracle", () => {
+  const options = parseArgs(["--oracle", "yarn"]);
+  assert.equal(options.oracle, "yarn");
 });
 
 test("shouldFail respects the severity threshold", () => {

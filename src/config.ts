@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
-import type { PackgateConfig } from "./types.js";
+import type { PackOracle, PackgateConfig } from "./types.js";
 
 export const DEFAULT_DENY = [
   "**/.env",
@@ -36,6 +36,7 @@ export function defaultConfig(): PackgateConfig {
     maxUnpackedBytes: null,
     scanContents: true,
     git: true,
+    oracle: "auto",
   };
 }
 
@@ -85,6 +86,9 @@ function mergeConfig(...parts: Partial<PackgateConfig>[]): PackgateConfig {
     }
     if (part.git !== undefined) {
       result.git = part.git;
+    }
+    if (part.oracle) {
+      result.oracle = part.oracle;
     }
   }
   return result;

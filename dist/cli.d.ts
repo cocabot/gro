@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { type ReportFormat } from "./report.js";
-import type { Severity } from "./types.js";
+import type { PackOracle, Severity } from "./types.js";
 export interface CliOptions {
     cwd: string;
     format: ReportFormat;
@@ -11,6 +11,7 @@ export interface CliOptions {
     configPath?: string;
     help: boolean;
     version: boolean;
+    oracle: PackOracle;
 }
 export declare function parseArgs(argv: string[]): CliOptions;
 export declare function helpText(): string;

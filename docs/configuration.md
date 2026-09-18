@@ -15,9 +15,10 @@ All keys are optional. Missing keys keep the defaults.
 | `deny` | string[] | see below | Packed paths matching a pattern fail. `!` prefixes a negation. |
 | `require` | string[] | `["LICENSE", "README.md"]` | Each entry must match at least one packed path (exact or glob). npm already auto-includes `LICENSE`/`README` when those files exist on disk; this check fails when they are absent entirely. |
 | `allowUntracked` | string[] | `[]` | Packed paths that may be absent from git (`packed-untracked` skip list). |
-| `maxUnpackedBytes` | number \| null | `null` | Fail when `npm pack` reports a larger unpacked size. |
+| `maxUnpackedBytes` | number \| null | `null` | Fail when the pack tarball's unpacked size exceeds this budget. |
 | `scanContents` | boolean | `true` | Read packed files for high-confidence secret patterns. |
 | `git` | boolean | `true` | Compare packed paths to `git ls-files`. |
+| `oracle` | `"auto"` \| `"npm"` \| `"pnpm"` \| `"yarn"` | `"auto"` | Which pack command to inspect. |
 
 Replacing `deny` replaces the **entire** default list. Copy the defaults you still want.
 

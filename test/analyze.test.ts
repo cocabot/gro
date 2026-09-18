@@ -78,6 +78,7 @@ test("an explicit files allow list with LICENSE, README, and main passes", async
   });
   const result = await analyze({ cwd });
   assert.deepEqual(result.findings, []);
+  assert.equal(result.oracle, "npm");
   assert.equal(
     result.packedFiles.map((file) => file.path).sort().join(","),
     "LICENSE,README.md,dist/index.js,package.json",
@@ -120,3 +121,39 @@ test("required LICENSE missing from tarball is a high finding", async () => {
   const result = await analyze({ cwd });
   assert.ok(result.findings.some((finding) => finding.kind === "missing-required" && finding.path === "LICENSE"));
 });
+
+function hasBin(name: string): boolean {
+  try {
+    execFileSync(name, ["--version"], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+test(
+  "pnpm oracle still fails the leaky files:* .env gate",
+  { skip: hasBin("pnpm") ? false : "pnpm not installed" },
+  async () => {
+    const cwd = makePackage({
+      files: {
+        "package.json": JSON.stringify({
+          name: "pnpm-leaky",
+          version: "1.0.0",
+          files: ["*"],
+        }),
+        "README.md": "example",
+        LICENSE: "MIT",
+        ".env": "NPM_TOKEN=npm_abcdefghijklmnopqrstuvwxyz\n",
+      },
+      gitignore: [".env"],
+      track: ["package.json", "README.md", "LICENSE", ".gitignore"],
+    });
+    const result = await analyze({ cwd, oracle: "pnpm" });
+    assert.equal(result.oracle, "pnpm");
+    const kinds = new Set(result.findings.map((finding) => finding.kind));
+    assert.equal(kinds.has("packed-untracked"), true);
+    assert.equal(kinds.has("secret-filename"), true);
+    assert.equal(shouldFail(result, "high"), true);
+  },
+);

@@ -1,14 +1,15 @@
 # Troubleshooting
 
-## `npm pack` failed (exit 2)
+## Pack command failed (exit 2)
 
-packgate shells out to `npm pack`. Failures usually mean:
+packgate shells out to `npm pack`, `pnpm pack`, or `yarn pack` depending on `--oracle` (default `auto`). Failures usually mean:
 
 - there is no `package.json` in `--path`
 - `package.json` is invalid JSON
-- npm cannot pack because of a lifecycle script error
+- the chosen pack tool is not on `PATH` (install it, enable Corepack, or pass `--oracle npm`)
+- the pack tool cannot pack because of a lifecycle script error
 
-Run `npm pack --dry-run --json` in the same directory. Fix that first.
+Run the same pack command in that directory (`npm pack --dry-run`, `pnpm pack`, or `yarn pack`). Fix that first.
 
 ## False positive: generated files are packed but not in git
 
@@ -50,4 +51,4 @@ The scanner is deliberately narrow. Add a deny glob for the filename, or use git
 
 ## Windows
 
-Content listing uses a built-in tar.gz reader, not the system `tar`. `npm` and `git` still need to be on `PATH`.
+Content listing uses a built-in tar.gz reader, not the system `tar`. The chosen pack command and `git` still need to be on `PATH`.

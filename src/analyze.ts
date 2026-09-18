@@ -3,7 +3,7 @@ import path from "node:path";
 import { loadConfig } from "./config.js";
 import { listTrackedFiles } from "./git.js";
 import { isDenied, matchGlob, normalizePosix } from "./glob.js";
-import { npmPack } from "./npmPack.js";
+import { packPackage } from "./pack.js";
 import { matchSecretContent, matchSecretFilename } from "./secrets.js";
 import type { AnalyzeOptions, AnalyzeResult, Finding, PackedFile, Severity } from "./types.js";
 
@@ -13,8 +13,9 @@ export async function analyze(options: AnalyzeOptions = {}): Promise<AnalyzeResu
     ...options.config,
     ...(options.scanContents === undefined ? {} : { scanContents: options.scanContents }),
     ...(options.git === undefined ? {} : { git: options.git }),
+    ...(options.oracle === undefined ? {} : { oracle: options.oracle }),
   });
-  const packed = npmPack(cwd);
+  const packed = packPackage(cwd, config.oracle);
   const findings: Finding[] = [];
   const packedPaths = new Set(packed.files.map((file) => normalizePosix(file.path)));
 
@@ -37,7 +38,7 @@ export async function analyze(options: AnalyzeOptions = {}): Promise<AnalyzeResu
           kind: "packed-untracked",
           severity: "high",
           path: relative,
-          message: `Packed file '${relative}' is not tracked by git. npm pack does not use .gitignore when a files field or .npmignore is present, so untracked files can be published.`,
+          message: `Packed file '${relative}' is not tracked by git. ${packed.oracle} pack does not use .gitignore when a files field or .npmignore is present, so untracked files can be published.`,
         });
       }
     }
@@ -93,7 +94,7 @@ export async function analyze(options: AnalyzeOptions = {}): Promise<AnalyzeResu
         kind: "missing-required",
         severity: "high",
         path: required,
-        message: `Required file '${required}' is not in the npm pack tarball.`,
+        message: `Required file '${required}' is not in the ${packed.oracle} pack tarball.`,
       });
     }
   }
@@ -103,12 +104,12 @@ export async function analyze(options: AnalyzeOptions = {}): Promise<AnalyzeResu
       const prefix = packagePath.replace(/\/$/, "");
       const found = [...packedPaths].some((item) => item === prefix || item.startsWith(`${prefix}/`));
       if (!found) {
-        findings.push(missingPackagePath(packagePath));
+        findings.push(missingPackagePath(packagePath, packed.oracle));
       }
       continue;
     }
     if (!packedPaths.has(packagePath)) {
-      findings.push(missingPackagePath(packagePath));
+      findings.push(missingPackagePath(packagePath, packed.oracle));
     }
   }
 
@@ -125,6 +126,7 @@ export async function analyze(options: AnalyzeOptions = {}): Promise<AnalyzeResu
     packageName: packed.packageName,
     version: packed.version,
     cwd,
+    oracle: packed.oracle,
     packedSize: packed.packedSize,
     unpackedSize: packed.unpackedSize,
     packedFiles: packed.files,
@@ -133,13 +135,13 @@ export async function analyze(options: AnalyzeOptions = {}): Promise<AnalyzeResu
   };
 }
 
-function missingPackagePath(packagePath: string): Finding {
+function missingPackagePath(packagePath: string, oracle: string): Finding {
   return {
     id: `missing-package-path:${packagePath}`,
     kind: "missing-package-path",
     severity: "critical",
     path: packagePath,
-    message: `package.json declares '${packagePath}' but npm pack does not include that path. Publishing would ship a broken package.`,
+    message: `package.json declares '${packagePath}' but ${oracle} pack does not include that path. Publishing would ship a broken package.`,
   };
 }
 

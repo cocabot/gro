@@ -1,5 +1,5 @@
 name: packgate
-description: Fail if npm pack would ship secrets, untracked files, or drop required package files
+description: Fail if npm, pnpm, or yarn pack would ship secrets, untracked files, or drop required package files
 author: cocabot
 branding:
   icon: package
@@ -29,6 +29,10 @@ inputs:
     description: Compare packed files against git ls-files
     required: false
     default: "true"
+  oracle:
+    description: Pack command to inspect (auto, npm, pnpm, or yarn)
+    required: false
+    default: auto
 outputs:
   finding-count:
     description: Total number of findings
@@ -37,7 +41,9 @@ outputs:
   high-count:
     description: Number of high findings
   packed-file-count:
-    description: Number of files npm pack would include
+    description: Number of files the pack command would include
+  resolved-oracle:
+    description: Pack command that was actually used (npm, pnpm, or yarn)
 runs:
   using: node20
   main: dist/action.js

@@ -1,4 +1,5 @@
 export type Severity = "critical" | "high" | "medium" | "low" | "info";
+export type PackOracle = "auto" | "npm" | "pnpm" | "yarn";
 export type FindingKind = "packed-untracked" | "deny-glob" | "secret-filename" | "secret-content" | "missing-required" | "missing-package-path" | "unpacked-size" | "dangerous-files-field";
 export interface PackedFile {
     path: string;
@@ -20,6 +21,7 @@ export interface PackgateConfig {
     maxUnpackedBytes: number | null;
     scanContents: boolean;
     git: boolean;
+    oracle: PackOracle;
 }
 export interface AnalyzeOptions {
     cwd?: string;
@@ -27,11 +29,13 @@ export interface AnalyzeOptions {
     configPath?: string;
     scanContents?: boolean;
     git?: boolean;
+    oracle?: PackOracle;
 }
 export interface AnalyzeResult {
     packageName: string;
     version: string;
     cwd: string;
+    oracle: Exclude<PackOracle, "auto">;
     packedSize: number;
     unpackedSize: number;
     packedFiles: PackedFile[];

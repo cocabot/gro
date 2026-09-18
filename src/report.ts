@@ -44,7 +44,7 @@ export function githubAnnotations(result: AnalyzeResult, failOn: Severity | "non
 
 function formatText(result: AnalyzeResult): string {
   const lines: string[] = [
-    `packgate ${result.packageName}@${result.version}`,
+    `packgate ${result.packageName}@${result.version} (${result.oracle} pack)`,
     `packed ${result.packedFiles.length} files (${result.unpackedSize} unpacked bytes, ${result.packedSize} packed bytes)`,
   ];
   if (result.findings.length === 0) {
@@ -62,6 +62,7 @@ function formatMarkdown(result: AnalyzeResult): string {
   const lines: string[] = [
     `## packgate ${result.packageName}@${result.version}`,
     "",
+    `- Pack oracle: **${result.oracle}**`,
     `- Packed files: **${result.packedFiles.length}**`,
     `- Unpacked size: **${result.unpackedSize}** bytes`,
     `- Packed size: **${result.packedSize}** bytes`,

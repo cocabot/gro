@@ -32,6 +32,7 @@ export function defaultConfig() {
         maxUnpackedBytes: null,
         scanContents: true,
         git: true,
+        oracle: "auto",
     };
 }
 export function loadConfig(cwd, configPath, overrides = {}) {
@@ -77,6 +78,9 @@ function mergeConfig(...parts) {
         }
         if (part.git !== undefined) {
             result.git = part.git;
+        }
+        if (part.oracle) {
+            result.oracle = part.oracle;
         }
     }
     return result;

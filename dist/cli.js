@@ -14,6 +14,7 @@ export function parseArgs(argv) {
         printFiles: false,
         help: false,
         version: false,
+        oracle: "auto",
     };
     for (let i = 0; i < argv.length; i += 1) {
         const arg = argv[i];
@@ -72,6 +73,14 @@ export function parseArgs(argv) {
             case "--print-files":
                 options.printFiles = true;
                 break;
+            case "--oracle": {
+                const value = next();
+                if (value !== "auto" && value !== "npm" && value !== "pnpm" && value !== "yarn") {
+                    throw new Error(`Unknown oracle '${value}'`);
+                }
+                options.oracle = value;
+                break;
+            }
             default:
                 if (arg.startsWith("-")) {
                     throw new Error(`Unknown argument '${arg}'`);
@@ -82,7 +91,7 @@ export function parseArgs(argv) {
     return options;
 }
 export function helpText() {
-    return `packgate — fail CI when npm pack would ship the wrong files
+    return `packgate — fail CI when npm/pnpm/yarn pack would ship the wrong files
 
 Usage:
   packgate [directory] [options]
@@ -93,6 +102,7 @@ Options:
   --format text|json|markdown|sarif
   --fail-on-severity LEVEL   none|info|low|medium|high|critical (default: high)
   --print-files              List packed file paths
+  --oracle auto|npm|pnpm|yarn  Pack command to inspect (default: auto)
   --no-scan-contents         Skip reading tarball contents for secret patterns
   --no-git                   Skip comparing packed files to git ls-files
   -h, --help                 Show help
@@ -101,7 +111,7 @@ Options:
 Exit codes:
   0  no findings at or above the severity threshold
   1  findings at or above the severity threshold
-  2  packgate could not complete (npm pack failed, invalid args, ...)
+  2  packgate could not complete (pack command failed, invalid args, ...)
 `;
 }
 export async function main(argv = process.argv.slice(2)) {
@@ -127,6 +137,7 @@ export async function main(argv = process.argv.slice(2)) {
             ...(options.configPath === undefined ? {} : { configPath: options.configPath }),
             scanContents: options.scanContents,
             git: options.git,
+            oracle: options.oracle,
         });
         if (options.printFiles) {
             for (const file of result.packedFiles) {

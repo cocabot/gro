@@ -1,0 +1,7 @@
+- id: packgate
+  name: packgate
+  description: Fail if the publish tarball would ship secrets, untracked files, or drop required files
+  entry: packgate
+  language: node
+  pass_filenames: false
+  always_run: true

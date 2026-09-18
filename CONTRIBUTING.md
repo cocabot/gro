@@ -1,10 +1,10 @@
 # Contributing
 
-Thanks for helping improve packgate. The useful contributions are: failing fixtures, clearer docs, fewer false positives, and support for other pack oracles (`pnpm pack`, Python wheels, crates).
+Thanks for helping improve packgate. The useful contributions are: failing fixtures, clearer docs, fewer false positives, and support for other pack oracles (Python wheels, crates).
 
 ## Development setup
 
-Requirements: Node.js 20+, npm, git.
+Requirements: Node.js 20+, npm, git. pnpm and Yarn are optional; tests that need them skip when the binary is missing.
 
 ```bash
 git clone https://github.com/cocabot/gro.git
@@ -43,7 +43,7 @@ Add a fixture under a temp dir (see `test/analyze.test.ts`) rather than snapshot
 Use the PR template. Include:
 
 - the problem (a tarball that is wrong today)
-- how you tested it (`npm test` and, if relevant, `npm pack --dry-run` in a fixture)
+- how you tested it (`npm test` and, if relevant, `npm pack` / `pnpm pack` / `yarn pack` in a fixture)
 - any compatibility impact (CLI flags, config keys, finding kinds)
 
 ## Security

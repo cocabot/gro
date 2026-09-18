@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-09-18
+
+### Added
+
+- `--oracle auto|npm|pnpm|yarn` inspects the tarball from that pack command (`auto` uses `packageManager`, then lockfiles)
+- pre-commit hook (`repo: https://github.com/cocabot/gro`, `always_run: true`)
+- GitHub Pages landing page under `site/`
+- Action output `resolved-oracle`
+
+### Changed
+
+- GitHub is the documented distribution channel (`npx github:cocabot/gro`, Action, pre-commit). npmjs is not required.
+
 ## [0.1.0] - 2026-09-17
 
 ### Added
@@ -21,4 +34,5 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - GitHub Action with job summary, annotations, and outputs
 - `packgate.json` and `package.json#packgate` configuration
 
+[0.2.0]: https://github.com/cocabot/gro/releases/tag/v0.2.0
 [0.1.0]: https://github.com/cocabot/gro/releases/tag/v0.1.0

@@ -18,11 +18,13 @@ export async function runAction() {
     const configPath = getInput("config");
     const scanContents = parseBoolean(getInput("scan-contents"), true);
     const git = parseBoolean(getInput("git"), true);
+    const oracle = (getInput("oracle", "auto") || "auto");
     const result = await analyze({
         cwd,
         ...(configPath ? { configPath } : {}),
         scanContents,
         git,
+        oracle,
     });
     const report = formatReport(result, format);
     process.stdout.write(report);
@@ -40,6 +42,7 @@ export async function runAction() {
             `critical-count=${result.counts.critical}`,
             `high-count=${result.counts.high}`,
             `packed-file-count=${result.packedFiles.length}`,
+            `resolved-oracle=${result.oracle}`,
             "",
         ].join("\n"));
     }
